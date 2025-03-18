@@ -1,0 +1,21 @@
+query,label
+SELECT * FROM users WHERE username = 'admin' -- AND password = 'password',1
+DROP TABLE students,1
+"INSERT INTO users (username, password) VALUES ('hacker', '1234')",1
+DELETE FROM accounts WHERE id = 1,1
+UPDATE users SET password = 'newpass' WHERE username = 'admin',1
+ALTER TABLE employees ADD COLUMN salary INT,1
+"CREATE TABLE hackers (id INT, data VARCHAR(100))",1
+"SELECT * FROM users UNION SELECT credit_card, pin FROM bank_accounts",1
+JOIN orders ON users.id = orders.user_id WHERE users.role = 'admin',1
+"SELECT username, password FROM admin_accounts WHERE role='superuser'",1
+"SELECT name, age FROM employees WHERE age > 30",0
+"INSERT INTO customers (name, email) VALUES ('John Doe', 'john@example.com')",0
+UPDATE products SET price = price * 0.9 WHERE category = 'Electronics',0
+DELETE FROM cart WHERE item_id = 42 AND user_id = 7,0
+ALTER TABLE books ADD COLUMN published_year INT,0
+"CREATE TABLE orders (order_id INT, user_id INT, total_price DECIMAL)",0
+SELECT COUNT(*) FROM transactions WHERE status = 'completed',0
+JOIN authors ON books.author_id = authors.id WHERE authors.country = 'USA',0
+"SELECT city, population FROM demographics WHERE population > 1000000",0
+"SELECT id, name FROM departments WHERE budget > 50000",0

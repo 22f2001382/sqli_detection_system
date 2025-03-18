@@ -1,0 +1,22 @@
+{
+    "avg_time": 0.01575613021850586,
+    "accuracy": [
+        92,
+        94,
+        95.5,
+        96,
+        98.456
+    ],
+    "precision": [
+        85,
+        88,
+        90,
+        92,
+        98.483
+    ],
+    "malicious_percentage": 62,
+    "non_malicious_percentage": 38,
+    "malicious_queries": 18755,
+    "non_malicious_queries": 11495,
+    "no_of_queries": 9
+}

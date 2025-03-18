@@ -1,0 +1,249 @@
+<html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>SQL Injection Detection</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+            <style>
+                    body {
+                        font-family: 'Arial', sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #121212;
+                        color: #ffffff;
+                    }
+    
+                    h1 {
+                        font-size: 2.5rem;
+                        color: #e0e0e0;
+                        text-align: center;
+                        margin-top: 50px;
+                    }
+    
+                    p {
+                        font-size: 1.2rem;
+                        text-align: center;
+                        color: black;
+                        margin-bottom: 30px;
+                    }
+    
+                    .container {
+                        width: 80%;
+                        max-width: 900px;
+                        margin: 40px auto; /* Ensures spacing from navbar */
+                        padding: 20px;
+                        background-color:#f8f9fa;
+                        border-radius: 7px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); 
+                        margin-top: 300px !important; /* Adjust space below navbar */
+    
+                    }
+    
+    
+                    .nav {
+                        text-align: center;
+                        margin-top: 20px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+    
+                    .nav a {
+                        padding: 12px 20px;
+                        background-color: #007bff;
+                        color: white;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        font-size: 1.1rem;
+                        transition: background-color 0.3s ease;
+                        text-align: center;
+    
+                    }
+    
+                    .nav a:hover {
+                        background-color: #0056b3;
+                    }
+    
+                    footer {
+                        text-align: center;
+                        color: #888;
+                        margin-top: 50px;
+                        font-size: 0.9rem;
+                    }
+            </style>
+
+    </head>
+    <body>
+        <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+            <ul class="navbar-nav ms-auto d-flex flex-row">
+                <li class="nav-item mx-3">
+                    <a class="nav-link active" aria-current="page" href="{{url_for('client_home')}}">Home</a>
+                </li>
+                <li class="nav-item mx-3">
+                  <a class="nav-link active" aria-current="page" href="{{url_for('newpage')}}">Analyze Query</a>
+                </li>
+                <li class="nav-item mx-3">
+                    <a class="nav-link active" aria-current="page" href="{{url_for('model_metrics')}}">View Model Metrics</a>
+                  </li>
+
+                <li class="nav-item mx-3">
+                    <a class="nav-link active" aria-current="page" href="{{url_for('index')}}">Logout</a>
+                  </li>
+
+              </ul>
+          </nav>
+
+  <div class="container mt-4">
+    
+        <!-- Tabs below the navbar -->
+        <ul class="nav nav-tabs" id="myTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="train-model" data-bs-toggle="tab" data-bs-target="#train" type="button" role="tab">Train Model</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="load-model" data-bs-toggle="tab" data-bs-target="#load" type="button" role="tab">Load Model</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="update-model" data-bs-toggle="tab" data-bs-target="#update" type="button" role="tab">Update Model</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="requests-list" data-bs-toggle="tab" data-bs-target="#request" type="button" role="tab">My Requests</button>
+            </li>
+
+        </ul>
+
+        <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="train">
+                <!-- <div id="train-model-content"></div> -->
+                <p>Our system enables clients to enhance the accuracy of our SQL injection detection model by training it on their own data. The central server hosts an SVM-based model, and clients can upload their datasets to refine its performance for their specific needs. Before training, all submitted data undergoes a validation check to prevent malicious inputs. Once verified, the data is used to further generalize and improve the model. This approach ensures a more adaptive and robust detection system while maintaining security and efficiency.</p>
+                <p>Please upload your data below for training</p>
+                <form enctype="multipart/form-data" id="csv-data">
+                    <label for="csvFile">Upload CSV File:</label>
+                    <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                    <button type="submit" class="btn btn-primary">Train Model</button>
+                </form>
+                <div id="responseMessage" class="mt-3"></div>
+            </div>
+            
+            <div class="tab-pane fade text-center" id="load">
+                    <p>Our system allows clients to load the pre-trained SQL injection detection model locally, enabling them to analyze queries without sharing sensitive data. This feature ensures privacy while still benefiting from the central server’s trained SVM model. Clients can download the latest model version and integrate it into their own systems for further evaluation or fine-tuning.</p>
+                    <button id="loadModelBtn" class="btn btn-primary" onclick="requestModelLoad()">Load Model</button>
+                <div id="responseMessage" class="mt-3"></div>
+            </div>
+
+            <div class="tab-pane fade" id="update">
+                 <p>Clients can update the central SQL injection detection model after training it on their own data. This feature enables federated learning, allowing clients to fine-tune the model locally and contribute their learned parameters without sharing raw data. To update the model, clients must export their trained model’s coefficient and intercept values into a JSON file and upload it here. The server will validate and merge these updates using federated averaging, ensuring continuous model improvement while maintaining data privacy.</p>
+                 <form enctype="multipart/form-data" id="json-data">
+                    <label for="jsonFile">Upload Update File (JSON):</label>
+                    <input type="file" id="jsonFile" name="jsonFile" accept=".json" required>
+                    <button type="submit" class="btn btn-primary">Train Model</button>
+                </form>
+                 <div id="updateMessage" class="mt-3"></div>
+            </div>
+            <div class="tab-pane fade" id="request">
+                <ul class="list-group">
+                    <ul class="list-group">
+                        {% for request in requests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ request.type }}</strong>  
+                                <br>
+                                <small class="text-muted">{{ request.created_at }}</small> <!-- Created date -->
+                            </div>
+                            <div>
+                                <span class="badge {% if request.status == 'Pending' %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ request.status }}
+                                </span>
+                                {% if request.type == "load" and request.status == "completed" %}
+                                    <button class="btn btn-primary btn-sm ms-2" onclick="loadModel()">Load Model</button>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                </ul>
+            </div>
+            <div class="tab-pane fade" id="metrics">
+                <div id="model-metrics-content"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+    document.getElementById("csv-data").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent normal form submission
+
+    let formData = new FormData();
+    let fileInput = document.getElementById("csvFile");
+
+    formData.append("csvFile", fileInput.files[0]); 
+    console.log("reached here")
+    fetch("/train_model_on_client_data", {
+        method: "POST",
+        body: formData, // Do NOT set Content-Type; `fetch()` handles it automatically
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Request created successfully!");
+    })
+    .catch(error => console.error("Error:", error));
+});  
+function requestModelLoad() {
+    fetch("/request_load_model", {
+        method:"POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Request created successfully!");
+    })
+    .catch(error => console.error("Error : ",error));
+}
+document.getElementById("json-data").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent normal form submission
+
+    let formData = new FormData();
+    let fileInput = document.getElementById("jsonFile");
+
+    formData.append("jsonFile", fileInput.files[0]); 
+    fetch("/request_update_model", {
+        method: "POST",
+        body: formData, // Do NOT set Content-Type; `fetch()` handles it automatically
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Request created successfully!");
+    })
+    .catch(error => console.error("Error:", error));
+});  
+function loadModel() {
+    fetch("/load_model", {
+        method: "GET"
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.log(`Network response was not ok: ${response.statusText}`);
+        }
+        return response.blob();  // Convert response to a blob (binary file)
+    })
+    .then(blob => {
+        // Create a temporary link to trigger file download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "model.pkl";  // Set download filename
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);  // Clean up
+        alert("Model downloaded successfully!");
+    })
+    .catch(error => {
+        console.error("Error loading model:", error);
+        alert("Failed to load model.");
+    });
+}
+    </script>
+</body>
+</html>

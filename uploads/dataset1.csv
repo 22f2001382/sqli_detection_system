@@ -1,0 +1,11 @@
+query,label
+SELECT * FROM users WHERE username = 'admin' --' AND password = 'password';,1
+"SELECT username, password FROM users WHERE id = 1 UNION SELECT user, password FROM admin_users;",1
+SELECT * FROM products WHERE id = 1 AND (SELECT COUNT(*) FROM users) > 0;,1
+UPDATE users SET password = 'hacked123' WHERE username = 'admin';,1
+DROP TABLE users;,1
+"SELECT username, email FROM users WHERE id = 5;",0
+"INSERT INTO users (username, email, password) VALUES ('john_doe', 'john@example.com', 'secure123');",0
+UPDATE orders SET status = 'shipped' WHERE order_id = 1001;,0
+DELETE FROM sessions WHERE last_active < '2024-01-01';,0
+SELECT COUNT(*) FROM users;,0
